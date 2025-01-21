@@ -5,7 +5,7 @@ import { StyledFooter } from './styles'
 const Footer = () => {
   return (
     <StyledFooter>
-      Desenvolvido com 🤍 por Heloise!
+      Desenvolvido por Heloise!
     </StyledFooter>
   );
 };
