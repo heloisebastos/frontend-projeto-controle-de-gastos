@@ -5,7 +5,7 @@ import ChatGemini from "../components/chat-gemini/ChatGemini";
 import { auth } from "../services/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import http from "../http";
-
+import PizzaChart from "../components/dashboard/PizzaChart";
 type Despesa = {
   id: number;
   descricao: string;
@@ -68,6 +68,12 @@ const Dashboard = () => {
           <p>R$ {saldo.toFixed(2)}</p>
         </S.Card>
       </S.CardsContainer>
+
+
+      {/* Gráfico de Pizza */}
+      <div style={{ margin: '20px auto', textAlign: 'center' }}>
+        <PizzaChart entradas={entradas} despesas={saidas} saldo={saldo} />
+      </div>
 
       {/* Tabela com os dados das despesas */}
       <S.StyledTable>
