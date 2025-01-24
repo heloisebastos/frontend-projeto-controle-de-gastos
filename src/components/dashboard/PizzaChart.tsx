@@ -16,7 +16,7 @@ const PizzaChart: React.FC<PizzaChartProps> = ({ entradas, despesas, saldo }) =>
         datasets: [
             {
                 data: [entradas, despesas, saldo],
-                backgroundColor: ['#28a745', '#dc3545', '#007bff'],
+                backgroundColor: ['#007bff', ' #dc3545', ' #28a745'],
                 hoverBackgroundColor: ['#218838', '#c82333', '#0056b3'],
             },
         ],
