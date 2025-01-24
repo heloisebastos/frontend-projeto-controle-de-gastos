@@ -10,7 +10,6 @@ interface PizzaChartProps {
 }
 
 const PizzaChart: React.FC<PizzaChartProps> = ({ entradas, despesas }) => {
-  // Dados mockados (substuir pelos dados reais quando o backend estiver disponível)
   const data = {
     labels: ['Entradas', 'Despesas'],
     datasets: [
