@@ -1,6 +1,31 @@
 import styled from "styled-components";
 import finance from "../assets/finance.png";
 
+
+
+export const FiltersContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  gap: 10px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+
+    select,
+    input {
+      margin-top: 5px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  }
+`;
+
+
 export const Container = styled.div`
   display: flex;
   flex-direction: column;

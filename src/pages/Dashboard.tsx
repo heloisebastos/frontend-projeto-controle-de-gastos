@@ -6,6 +6,7 @@ import { auth } from "../services/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import http from "../http";
 import PizzaChart from "../components/dashboard/PizzaChart";
+
 type Despesa = {
   id: number;
   descricao: string;
@@ -18,8 +19,12 @@ type Despesa = {
 
 const Dashboard = () => {
   const [despesas, setDespesas] = useState([] as Despesa[]);
-  const [user] = useAuthState(auth); // Hook do Firebase pa
+  const [filteredDespesas, setFilteredDespesas] = useState([] as Despesa[]);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Mês atual
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Ano atual
+  const [user] = useAuthState(auth);
 
+  // Fetch despesas from API
   useEffect(() => {
     const fetchDespesas = async () => {
       try {
@@ -30,31 +35,68 @@ const Dashboard = () => {
       }
     };
     fetchDespesas();
-  }, []);
+  }, [user]);
 
-  const calcularTotais = () => {
-    if (despesas.length === 0) {
+  // Filter despesas by month and year
+  useEffect(() => {
+    const despesasFiltradas = despesas.filter((despesa) => {
+      const dataDespesa = new Date(despesa.data);
+      return (
+        dataDespesa.getMonth() + 1 === selectedMonth &&
+        dataDespesa.getFullYear() === selectedYear
+      );
+    });
+    setFilteredDespesas(despesasFiltradas);
+  }, [despesas, selectedMonth, selectedYear]);
+
+  const calcularTotais = (despesasFiltradas: Despesa[]) => {
+    if (despesasFiltradas.length === 0) {
       return { entradas: 0, saidas: 0, saldo: 0 };
     }
 
-    const entradas = despesas
+    const entradas = despesasFiltradas
       .filter((d) => d.tipo === "entrada" && d.valor)
       .reduce((acc, d) => acc + d.valor, 0);
 
-    const saidas = despesas
+    const saidas = despesasFiltradas
       .filter((d) => d.tipo === "saída" && d.valor)
       .reduce((acc, d) => acc + d.valor, 0);
 
     return { entradas, saidas, saldo: entradas - saidas };
   };
 
-  const { entradas, saidas, saldo } = calcularTotais();
+  const { entradas, saidas, saldo } = calcularTotais(filteredDespesas);
 
   return (
     <S.TableContainer>
       <S.Title>Dashboard de Finanças</S.Title>
-      {/* Totais de Entradas, Saídas e Saldo */}
 
+      {/* Filtro por mês e ano */}
+      <S.FiltersContainer>
+        <label>
+          Mês:
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+          >
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {i + 1}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Ano:
+          <input
+            type="number"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+          />
+        </label>
+      </S.FiltersContainer>
+
+      {/* Totais de Entradas, Saídas e Saldo */}
       <S.CardsContainer>
         <S.Card bgColor=" #007bff">
           <p>Entradas</p>
@@ -70,9 +112,8 @@ const Dashboard = () => {
         </S.Card>
       </S.CardsContainer>
 
-
       {/* Gráfico de Pizza */}
-      <div style={{ margin: '20px auto', textAlign: 'center' }}>
+      <div style={{ margin: "20px auto", textAlign: "center" }}>
         <PizzaChart entradas={entradas} despesas={saidas} saldo={saldo} />
       </div>
 
@@ -88,7 +129,7 @@ const Dashboard = () => {
           </tr>
         </thead>
         <tbody>
-          {despesas.map((despesa) => (
+          {filteredDespesas.map((despesa) => (
             <tr key={despesa.id}>
               <td>{despesa.descricao}</td>
               <td>{despesa.categoria}</td>
